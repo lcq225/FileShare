@@ -11,7 +11,7 @@ pip install -r requirements.txt
 ```
 
 ## 启动方式
-双击运行`StartService.bat`脚本，默认访问地址：http://localhost:8000
+双击运行`StartService.bat`脚本，默认访问地址：http://localhost:5000
 
 ## 初始用户
 管理员：admin，admin_password；manager,manager_password
@@ -45,6 +45,8 @@ USER_PASSWORD = 'user_password'
 - `templates/`：前端页面模板
 - `build.py`：打包构建Windows下的exe程序脚本
 - `images/`：系统截图文档
+- 'intall/':运行build.py程序打包程序时所依赖的bat程序
+- 'download/'上传文件的存储目录
 
 ## 常见问题
 Q：端口冲突如何解决？
