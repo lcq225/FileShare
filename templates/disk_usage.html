@@ -1,0 +1,212 @@
+<!-- templates/disk_usage.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>磁盘使用情况 - 文件管理中心</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e6ed;
+            flex-wrap: wrap;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .user-card {
+            background: #e3f2fd;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .role-badge {
+            background: #f44336;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.8em;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .disk-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .progress-container {
+            margin: 30px 0;
+        }
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .progress-bar {
+            height: 30px;
+            background: #ecf0f1;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #3498db;
+            border-radius: 15px;
+            transition: width 0.5s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            min-width: 30px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border-left: 4px solid #3498db;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 10px 0;
+        }
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const percent = {{ percent }};
+            const progressFill = document.querySelector('.progress-fill');
+            // 动画效果填充进度条
+            setTimeout(() => {
+                progressFill.style.width = `${percent}%`;
+                progressFill.textContent = `${percent.toFixed(1)}%`;
+            }, 300);
+        });
+    </script>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1><i class="fas fa-hard-drive"></i> 磁盘使用情况</h1>
+        </div>
+        <div class="user-info">
+            <div class="user-card">
+                <i class="fas fa-user"></i>
+                <span>{{ user.username }}</span>
+                <span class="role-badge">{{ user.role }}</span>
+            </div>
+            <a href="/" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i> 返回首页
+            </a>
+        </div>
+    </div>
+    
+    <div class="disk-container">
+        <h2><i class="fas fa-chart-pie"></i> 存储空间使用情况</h2>
+        
+        <div class="progress-container">
+            <div class="progress-labels">
+                <span>0%</span>
+                <span>100%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%;">0%</div>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">总空间</div>
+                <div class="stat-value">{{ total|round(2) }} GB</div>
+                <div class="stat-desc">磁盘总容量</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">已使用</div>
+                <div class="stat-value">{{ used|round(2) }} GB</div>
+                <div class="stat-desc">已使用空间</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">可用空间</div>
+                <div class="stat-value">{{ free|round(2) }} GB</div>
+                <div class="stat-desc">剩余可用空间</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">使用率</div>
+                <div class="stat-value">{{ percent|round(1) }}%</div>
+                <div class="stat-desc">当前使用比例</div>
+            </div>
+        </div>
+        
+        <a href="/" class="btn btn-primary">
+            <i class="fas fa-arrow-left"></i> 返回文件列表
+        </a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!-- templates/upload.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上传文件 - 文件管理中心</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e6ed;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .user-card {
+            background: #e3f2fd;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .role-badge {
+            background: #4CAF50;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.8em;
+        }
+        .role-admin { background: #f44336; }
+        .role-user { background: #2196F3; }
+        .role-guest { background: #9E9E9E; }
+        h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .upload-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        .file-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px dashed #3498db;
+            border-radius: 8px;
+            background: #f8fafc;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .file-input:hover {
+            background: #edf7ff;
+            border-color: #2980b9;
+        }
+        .file-input i {
+            font-size: 48px;
+            color: #3498db;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .file-input p {
+            margin: 10px 0;
+            color: #7f8c8d;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #2c3e50;
+            border: 1px solid #e0e6ed;
+        }
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+        .file-info {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .file-info h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .file-info ul {
+            margin-left: 20px;
+            color: #7f8c8d;
+        }
+        .file-info li {
+            margin-bottom: 8px;
+        }
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        .notification {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .notification-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        #file-name {
+            font-weight: 500;
+            color: #3498db;
+            margin-top: 10px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1><i class="fas fa-cloud-upload-alt"></i> 上传文件</h1>
+        </div>
+        <div class="user-info">
+            <div class="user-card">
+                <i class="fas fa-user"></i>
+                <span>{{ username }}</span>
+                <span class="role-badge role-admin">管理员</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 通知消息 -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="notification notification-{{ category }}">
+                    <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <div class="upload-container">
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="file">选择要上传的文件</label>
+                <div class="file-input" onclick="document.getElementById('file').click()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>点击或拖拽文件到此处</p>
+                    <p class="small">支持中文文件名，最大文件大小: 100MB</p>
+                    <div id="file-name">未选择文件</div>
+                </div>
+                <input type="file" id="file" name="file" style="display:none;" onchange="updateFileName()">
+            </div>
+            
+            <div class="file-info">
+                <h3><i class="fas fa-info-circle"></i> 上传说明</h3>
+                <ul>
+                    <li>支持的文件类型: PDF, DOCX, XLSX, JPG, PNG, GIF, ZIP, TXT, PPTX, MP4, MP3</li>
+                    <li>最大文件大小: 100MB</li>
+                    <li>同名文件将自动重命名以避免覆盖</li>
+                    <li>支持中文文件名，特殊字符将被过滤</li>
+                    <li>上传后文件将立即出现在文件列表中</li>
+                </ul>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-upload"></i> 上传文件
+                </button>
+                <a href="/" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> 返回列表
+                </a>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        function updateFileName() {
+            const fileInput = document.getElementById('file');
+            const fileNameDisplay = document.getElementById('file-name');
+            
+            if (fileInput.files.length > 0) {
+                fileNameDisplay.textContent = fileInput.files[0].name;
+            } else {
+                fileNameDisplay.textContent = '未选择文件';
+            }
+        }
+        
+        // 拖拽文件支持
+        const dropArea = document.querySelector('.file-input');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dropArea.style.backgroundColor = '#edf7ff';
+            dropArea.style.borderColor = '#2980b9';
+        }
+        
+        function unhighlight() {
+            dropArea.style.backgroundColor = '#f8fafc';
+            dropArea.style.borderColor = '#3498db';
+        }
+        
+        dropArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length) {
+                document.getElementById('file').files = files;
+                updateFileName();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,698 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件管理中心</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.4.8/sweetalert2.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --success: #2ecc71;
+            --success-dark: #27ae60;
+            --danger: #e74c3c;
+            --danger-dark: #c0392b;
+            --warning: #f39c12;
+            --warning-dark: #d35400;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --gray: #7f8c8d;
+            --border: #e0e6ed;
+            --card-bg: #ffffff;
+            --bg: #f5f7fa;
+        }
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: var(--bg);
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .user-card {
+            background: #e3f2fd;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .role-badge {
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+        .role-admin { background: var(--danger); }
+        .role-user { background: var(--primary); }
+        h1 {
+            color: var(--dark);
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        .btn-success:hover {
+            background: var(--success-dark);
+        }
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        .btn-danger:hover {
+            background: var(--danger-dark);
+        }
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        .btn-warning:hover {
+            background: var(--warning-dark);
+        }
+        .btn-light {
+            background: var(--light);
+            color: var(--dark);
+        }
+        .file-list {
+            list-style: none;
+            padding: 0;
+        }
+        .file-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        .file-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-color: var(--primary);
+        }
+        .file-checkbox {
+            margin-right: 15px;
+        }
+        .file-info {
+            flex-grow: 1;
+            max-width: 70%;
+        }
+        .file-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: var(--dark);
+            word-break: break-all;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .file-meta {
+            display: flex;
+            gap: 15px;
+            color: var(--gray);
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+        .file-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .file-type {
+            background: #e3f2fd;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .file-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+            font-size: 14px;
+            border: 1px solid var(--border);
+        }
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .preview-btn {
+            background: #9b59b6;
+            color: white;
+            border: none;
+        }
+        .preview-btn:hover {
+            background: #8e44ad;
+        }
+        .download-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+        .download-btn:hover {
+            background: var(--primary-dark);
+        }
+        .rename-btn {
+            background: #2c3e50;
+            color: white;
+            border: none;
+        }
+        .rename-btn:hover {
+            background: #1a252f;
+        }
+        .delete-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+        }
+        .delete-btn:hover {
+            background: var(--danger-dark);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            border: 2px dashed var(--border);
+            margin: 20px 0;
+        }
+        .empty-state i {
+            font-size: 48px;
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+        .empty-state h3 {
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+        .empty-state p {
+            color: var(--gray);
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: var(--gray);
+            font-size: 14px;
+            padding: 20px;
+            border-top: 1px solid var(--border);
+        }
+        .notification {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .notification-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        .notification-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        .upload-info {
+            background: #e2e3e5;
+            color: #383d41;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border-left: 4px solid #6c757d;
+        }
+        .upload-info ul {
+            margin: 10px 0 10px 20px;
+        }
+        .upload-info li {
+            margin-bottom: 5px;
+        }
+        .batch-actions {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            border-left: 4px solid var(--primary);
+        }
+        .select-all {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 15px;
+        }
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            max-width: 500px;
+        }
+        .search-box input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        .search-box input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        .search-box button {
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .search-box button:hover {
+            background: var(--primary-dark);
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin: 30px 0;
+        }
+        .page-item {
+            display: inline-block;
+        }
+        .page-link {
+            padding: 8px 15px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--primary);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .page-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+        .page-item.active .page-link {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .stats-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--primary);
+        }
+        .stats-title {
+            font-size: 18px;
+            color: var(--dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .stats-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        @media (max-width: 768px) {
+            .file-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .file-actions {
+                margin-top: 15px;
+                width: 100%;
+                justify-content: flex-end;
+            }
+            .file-info {
+                max-width: 100%;
+            }
+            .actions {
+                flex-direction: column;
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .user-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .batch-actions {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1><i class="fas fa-folder-tree"></i> 文件管理中心</h1>
+            <div class="user-card">
+                <i class="fas fa-user"></i>
+                <span>{{ user.username }}</span>
+                <span class="role-badge role-{{ user.role }}">{{ user.role }}</span>
+            </div>
+        </div>
+        
+        <div class="user-info">
+            {% if user.authenticated %}
+            <div class="user-actions">
+                <a href="{{ url_for('change_password') }}" class="btn btn-warning">
+                    <i class="fas fa-key"></i> 修改密码
+                </a>
+                <a href="{{ url_for('logout') }}" class="btn btn-danger">
+                    <i class="fas fa-sign-out-alt"></i> 退出
+                </a>
+                {% if user.role == 'admin' %}
+                <a href="{{ url_for('view_logs') }}" class="btn btn-light">
+                    <i class="fas fa-history"></i> 查看日志
+                </a>
+                <a href="{{ url_for('disk_usage') }}" class="btn btn-light">
+                    <i class="fas fa-hard-drive"></i> 磁盘使用
+                </a>
+                {% endif %}
+            </div>
+            {% else %}
+            <a href="{{ url_for('login') }}" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i> 登录
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- 通知消息 -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="notification notification-{{ category }}">
+                    <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <div class="stats-card">
+        <div class="stats-title"><i class="fas fa-chart-bar"></i> 系统统计</div>
+        <div class="stats-value">{{ total_files }} 个文件</div>
+    </div>
+    
+    <form action="{{ url_for('index') }}" method="GET" class="search-box">
+        <input type="text" name="q" value="{{ search_query }}" placeholder="搜索文件名..." aria-label="搜索文件">
+        <button type="submit"><i class="fas fa-search"></i> 搜索</button>
+    </form>
+    
+    {% if can_upload %}
+    <div class="actions">
+        <a href="/upload" class="btn btn-primary">
+            <i class="fas fa-upload"></i> 上传新文件
+        </a>
+    </div>
+    {% endif %}
+    
+    {% if files %}
+    <div class="upload-info">
+        <p><strong>系统信息：</strong></p>
+        <ul>
+            <li>支持的文件类型: PDF, DOCX, XLSX, JPG, PNG, GIF, ZIP, TXT, PPTX, MP4, MP3</li>
+            <li>最大文件大小: 100MB</li>
+            <li>当前用户权限: {{ user.role }} ({% if can_upload %}可上传{% else %}仅查看{% endif %})</li>
+            <li>提示: 勾选文件后可以使用批量操作功能</li>
+        </ul>
+    </div>
+    
+    <form id="files-form" method="post">
+        <div class="batch-actions">
+            <div class="select-all">
+                <input type="checkbox" id="select-all">
+                <label for="select-all">全选</label>
+            </div>
+            <button type="submit" formaction="{{ url_for('download_multiple_files') }}" class="btn btn-success">
+                <i class="fas fa-download"></i> 下载选中文件
+            </button>
+            {% if can_delete %}
+            <button type="submit" formaction="{{ url_for('delete_multiple_files') }}" class="btn btn-danger" id="delete-selected">
+                <i class="fas fa-trash-alt"></i> 删除选中文件
+            </button>
+            {% endif %}
+        </div>
+    
+        <ul class="file-list">
+            {% for file in files %}
+            <li class="file-item">
+                <div class="file-checkbox">
+                    <input type="checkbox" name="selected_files" value="{{ file.name }}" class="file-check">
+                </div>
+                <div class="file-info">
+                    <div class="file-name">
+                        <i class="fas fa-file-{{ 'pdf' if file.type == 'PDF' else 'image' if file.type in ['JPG','JPEG','PNG','GIF'] else 'word' if file.type == 'DOCX' else 'excel' if file.type == 'XLSX' else 'powerpoint' if file.type == 'PPTX' else 'archive' if file.type == 'ZIP' else 'audio' if file.type in ['MP3','WAV'] else 'video' if file.type in ['MP4','MOV'] else 'alt' }}"></i>
+                        {{ file.name }}
+                    </div>
+                    <div class="file-meta">
+                        <span><i class="fas fa-hdd"></i> {{ file.size }}</span>
+                        <span class="file-type"><i class="fas fa-tag"></i> {{ file.type }} 文件</span>
+                        <span><i class="fas fa-calendar-alt"></i> {{ file.mod_date }}</span>
+                    </div>
+                </div>
+                <div class="file-actions">
+                    {% if file.previewable %}
+                    <a href="/preview/{{ file.name }}" class="action-btn preview-btn" target="_blank">
+                        <i class="fas fa-eye"></i> 预览
+                    </a>
+                    {% endif %}
+                    <a href="/download/{{ file.name }}" class="action-btn download-btn">
+                        <i class="fas fa-download"></i> 下载
+                    </a>
+                    {% if can_rename %}
+                    <a href="/rename/{{ file.name }}" class="action-btn rename-btn">
+                        <i class="fas fa-edit"></i> 重命名
+                    </a>
+                    {% endif %}
+                    {% if can_delete %}
+                    <button type="submit" formaction="/delete-multiple" class="action-btn delete-btn" name="selected_files" value="{{ file.name }}" data-filename="{{ file.name }}">
+                        <i class="fas fa-trash-alt"></i> 删除
+                    </button>
+                    {% endif %}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </form>
+    
+    <!-- 分页控件 -->
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('index', q=search_query, page=page-1) }}" class="page-link">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        {% endif %}
+        
+        {% for p in range(1, total_pages+1) %}
+        <a href="{{ url_for('index', q=search_query, page=p) }}" class="page-link {% if p == page %}active{% endif %}">
+            {{ p }}
+        </a>
+        {% endfor %}
+        
+        {% if page < total_pages %}
+        <a href="{{ url_for('index', q=search_query, page=page+1) }}" class="page-link">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-folder-open"></i>
+        <h3>没有找到文件</h3>
+        <p>{% if search_query %}没有匹配 "{{ search_query }}" 的文件{% else %}请上传新文件或检查文件目录{% endif %}</p>
+        {% if can_upload %}
+        <div style="margin-top: 20px;">
+            <a href="/upload" class="btn btn-primary">
+                <i class="fas fa-upload"></i> 上传第一个文件
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <div class="footer">
+        <p>文件管理系统 | 安全稳定 | 当前时间: {{ current_time }}</p>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.4.8/sweetalert2.min.js"></script>
+    <script>
+        // 自动隐藏通知消息
+        setTimeout(() => {
+            const notifications = document.querySelectorAll('.notification');
+            notifications.forEach(notification => {
+                notification.style.transition = 'opacity 0.5s';
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    notification.remove();
+                }, 500);
+            });
+        }, 5000);
+        
+        // 全选/取消全选功能
+        document.getElementById('select-all').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.file-check');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+        
+        // 批量删除确认
+        document.getElementById('delete-selected')?.addEventListener('click', function(e) {
+            const selectedCount = document.querySelectorAll('.file-check:checked').length;
+            if (selectedCount === 0) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: '请选择文件',
+                    text: '请先勾选要删除的文件',
+                });
+                return;
+            }
+            
+            e.preventDefault();
+            Swal.fire({
+                title: '确认删除?',
+                html: `确定要删除选中的 <b>${selectedCount}</b> 个文件吗？`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e74c3c',
+                cancelButtonColor: '#7f8c8d',
+                confirmButtonText: '确定删除',
+                cancelButtonText: '取消'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('files-form').submit();
+                }
+            });
+        });
+        
+        // 单个文件删除确认
+        document.querySelectorAll('.action-btn.delete-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (this.getAttribute('type') === 'submit') {
+                    e.preventDefault();
+                    const filename = this.getAttribute('data-filename');
+                    Swal.fire({
+                        title: '确认删除?',
+                        html: `确定要删除文件 <b>${filename}</b> 吗？`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#e74c3c',
+                        cancelButtonColor: '#7f8c8d',
+                        confirmButtonText: '确定删除',
+                        cancelButtonText: '取消'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.form.submit();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
