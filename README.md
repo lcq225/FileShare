@@ -43,7 +43,7 @@ USER_PASSWORD = 'user_password'
 关键文件说明：
 - `app.py`：主程序入口
 - `templates/`：前端页面模板
-- `build.py`：打包构建脚本
+- `build.py`：打包构建Windows下的exe程序脚本
 - `images/`：系统截图文档
 
 ## 常见问题
