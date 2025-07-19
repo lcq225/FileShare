@@ -35,7 +35,7 @@ USER_PASSWORD = 'user_password'
 ## 注意事项
 1. 首次使用前必须安装依赖
 2. 上传文件默认存储在`downloads`目录
-3. 管理员默认凭证：admin/admin（首次登录后请立即修改）
+3. 管理员默认凭证：admin/admin_password（首次登录后请立即修改）
 4. 生产环境需修改`app.py`中的secret_key
 5. 单文件上传限制为2GB
 
